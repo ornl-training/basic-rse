@@ -6,3 +6,12 @@ target_link_libraries(AWESOME_sla_tests AWESOME_libawesome)
 target_include_directories(AWESOME_sla_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_test(AwesomeSparseLinearAlgebra linear_algebra_tests)
+
+
+add_executable(AWESOME_pde_tests pde_tests.cpp)
+set_target_properties(AWESOME_pde_tests PROPERTIES OUTPUT_NAME "pde_tests")
+
+target_link_libraries(AWESOME_pde_tests AWESOME_libawesome)
+target_include_directories(AWESOME_pde_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_test(AwesomePDE pde_tests)

@@ -29,12 +29,15 @@ set(DOXYGEN_PROJECT_NUMBER "")
 set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
 
 doxygen_add_docs(AWESOME_docs
-                 ${CMAKE_CURRENT_SOURCE_DIR}/../README.md
+                 ${CMAKE_CURRENT_SOURCE_DIR}/../Testing/awsTestingCommon.hpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/../Testing/linear_algebra_tests.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/../Testing/pde_tests.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Awesome.hpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/../Source/awsCoreMatrixOperations.hpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/../Source/awsCoreSparseLinearSolvers.hpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/../Source/awsSparseLinearAlgebra.hpp
-                 ${CMAKE_CURRENT_SOURCE_DIR}/../Testing/awsTestingCommon.hpp
-                 ${CMAKE_CURRENT_SOURCE_DIR}/../Testing/linear_algebra_tests.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/../Source/awsOperatorConstructor.hpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/../README.md
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                  COMMENT "Building the AWESOME documentation")
 

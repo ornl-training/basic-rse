@@ -1,7 +1,6 @@
 #ifndef __AWS_CORE_SPARSE_SOLVERS_HPP
 #define __AWS_CORE_SPARSE_SOLVERS_HPP
 
-#include <vector>
 #include <functional>
 
 namespace AWSM{
@@ -29,7 +28,7 @@ namespace AWSM{
 //! - Gauss-Seidel (GS) method: designed for diagonally dominant matrices and based on the Fixed-Point-Iteration (a.k.a., contraction approach)
 //!
 //! \par
-//! The generalized templates operate on an abstract math-vector space, which is operated only through a set of \i lambda functions.
+//! The generalized templates operate on an abstract math-vector space, which is operated only through a set of \b lambda functions.
 //! The advantage of the generalization is that the same solver/template can be easily adjusted to work with vectors implemented
 //! using either CPU or GPU memory accross one or more nodes. In addition, the vector data-structures can be also generalized to
 //! allow for batch solving, i.e., solve multiple linear systems with either the same or different matrices.
@@ -44,6 +43,8 @@ namespace AWSM{
 //! The array structures are implemented using \b std::valarray data structures.
 //!
 
+//! \brief Iterations for the Preconditioned Conjugate-Gradient method (templated version).
+//! \ingroup AwesomeSLA
 template<class FPScalar, class FPVector>
 unsigned
 int solveCGtemp(std::function<void(const FPVector &x, FPVector &r)> apply_preconditioner,
@@ -51,18 +52,34 @@ int solveCGtemp(std::function<void(const FPVector &x, FPVector &r)> apply_precon
                 const FPVector &b, FPVector &x,
                 std::function<void(const FPScalar &num, const FPScalar &denom, FPScalar &ratio)> scalar_division,
                 std::function<void(FPScalar &src, FPScalar &dest)> scalar_move,
-                std::function<void(const FPVector &src, FPVector &des)> vector_copy,
+                std::function<void(const FPVector &src, FPVector &dest)> vector_copy,
                 std::function<void(const FPScalar &s, FPVector &x)> vector_scale,
                 std::function<void(int dir, const FPVector &x, FPVector &y)> vector_xpy,
                 std::function<void(int dir, const FPScalar &s, const FPVector &x, FPVector &y)> vector_axpy,
                 std::function<void(const FPVector &x, const FPVector &y, FPScalar &s)> vector_dot,
                 std::function<bool(int, const FPVector &)> check_converged){
-//! \brief Iterations for the Preconditioned Conjugate-Gradient method (templated version)
-//! \ingroup AwesomeSLA
-//!
 //! Solves \f$ A x = b \f$ using preconditioner **apply_preconditioner()**;
 //! effectively solves \f$ E^{-1} A E^{-T} \hat x = E^{-1} b \f$ where the **E** and **A** are linear operators,
 //! and returns \f$ x = E^{-T} \hat x \f$; note that **apply_preconditioner()** works with the product \f$ E E^T \f$ only.
+//!
+//! The solver operates on a general (abstract) vector space, where the vector and scalar operations are defined
+//! using the \b lambdas. The vector generalization allows to use one template with vectors allocated on the CPU or GPU
+//! or even distributed across a network. The scalar generalization allows for easy implementation of batch solvers,
+//! where scalars are vectors, vectors are matrices, and matrices have 3-dimensional structure.
+//!
+//! The \b FPScalar and \b FPVector classes must have default empty constructors and a default vector must be
+//! a valid entry for \b dest, \b r, and \b ratio variable in calls to \b apply_operator(), \b vector_copy(),
+//! \b scalar_move(), \b scalar_division(), and \b vector_dot(). For example, if \b FPVector is \b std::vector<double>
+//! then \b apply_operator() must call \b resize() on the vector.
+//!
+//! - \b scalar_division() takes numerator and denominator and returns the ratio.
+//! - \b scalar_move() will assign the value of \b src to \b dest, the \b src will only be used as output variable of future calls.
+//! - \b vector_copy() assign the value of \b src to the \b dest, but does not alter the source.
+//! - \b vector_scale() scale the vector by a scalar
+//! - \b vector_xpy() and \b vector_axpy() performs scaled addition, i.e., `y += dir * s * x`, where \b dir is +1 or -1 and indicates only a direction.
+//! - \b vector_dot() computes the vector dot-product.
+//! - \b check_converged() takes the current iteration count and the residual vector and must return \b True when the iteration should be
+//!   terminated, e.g., when the desired tolerance is reached or when the maximum number of iteration is exceeded.
 
     FPVector r, p, Ap, z;
     FPScalar zr, nzr, a;
@@ -109,15 +126,14 @@ int solveCGtemp(std::function<void(const FPVector &x, FPVector &r)> apply_precon
     return iterations;
 }
 
+//! \brief Iterations for the Gauss–Seidel (GMRES) method.
+//! \ingroup AwesomeSLA
 template<class FPVector>
 int solveGuassSeideltemp(std::function<void(const FPVector &x, FPVector &u)> apply_inner,
                          std::function<void(const FPVector &u, FPVector &r)> solve_outer,
                          FPVector &x,
                          std::function<void(FPVector &u, FPVector &v)> vector_swap,
                          std::function<bool(unsigned int iteration, const FPVector &xnew, FPVector &xold)> converged){
-//! \brief Iterations for the Gauss–Seidel (GMRES) method
-//! \ingroup AwesomeSLA
-
 //! Solves \f$ A x = b \f$ where the matrix is split into lower section (including the diagonal entries) and upper section (with zero diagonal).
 //! The iteration is split into two stages, first compute \f$ u = b - U x \f$ using **apply_inner()** (here U is the upper section of A),
 //! and then compute \f$ r = L^{-1} u \f$ where L is the lower section of A. The convergence criteria usually uses the norm of the difference

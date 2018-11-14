@@ -2,6 +2,17 @@
 
 #include "awsTestingCommon.hpp"
 
+//!
+//! \file linear_algebra_tests.cpp
+//! \brief AWESOME Linear Algebra Testing
+//! \author Miroslav Stoyanov
+//! \copyright ???
+//! \ingroup AwesomeTesting
+//! \internal
+//!
+//! Testing for the AWESOME Linear Algebra
+//!
+
 using std::cout;
 using std::endl;
 
@@ -9,6 +20,9 @@ template <typename typeFP> void test_matvec();
 template<typename typeFP> void test_factorILU();
 template<typename typeFP> void test_solveCG();
 
+//! \internal
+//! \brief Execute all tests and returns zero (if no exceptions are encountered)
+//! \ingroup AwesomeTesting
 int main(void){
 
     cout << endl << "    AWESOME: Sparse Linear Algebra Tests" << endl << endl;
@@ -25,11 +39,12 @@ int main(void){
     return 0;
 }
 
-template <typename typeFP> void test_matvec(){
 //! \internal
 //! \brief Test the matrix vector product with 2 matrices and 3 vectors chosen to minimize the chance of double-error cancellation
 //! \ingroup AwesomeTesting
-    typeFP tol = (sizeof(typeFP) > 4) ? 1.E-13 : 1.E-6;
+template <typename typeFP> void test_matvec(){
+
+    typeFP tol = (typeFP) ((sizeof(typeFP) > 4) ? 1.E-13 : 1.E-6);
     std::valarray<int> pntr = {0, 3, 7, 10, 11, 14, 17};
     std::valarray<int> indx = {0, 1, 4, 0, 1, 4, 5, 1, 2, 5, 1, 2, 4, 5, 0, 3, 5};
     std::valarray<typeFP> vals(1.0, 17);
@@ -59,11 +74,12 @@ template <typename typeFP> void test_matvec(){
     reportPass<typeFP>("test_matvec");
 }
 
-template<typename typeFP> void test_factorILU(){
 //! \internal
 //! \brief Test the Incomplete LU factorization.
 //! \ingroup AwesomeTesting
-    typeFP tol = (sizeof(typeFP) > 4) ? 1.E-13 : 1.E-6;
+template<typename typeFP> void test_factorILU(){
+
+    typeFP tol = (typeFP) ((sizeof(typeFP) > 4) ? 1.E-13 : 1.E-6);
     std::valarray<int> pntr = {0, 3, 6, 9};
     std::valarray<int> indx = {0, 1, 2, 0, 1, 2, 0, 1, 2};
     std::valarray<typeFP> vals = {3.0, 2.0, 1.0, 2.0, 4.0, 3.0, 2.0, 1.0, 6.0};
@@ -92,11 +108,12 @@ template<typename typeFP> void test_factorILU(){
     reportPass<typeFP>("test_factorILU");
 }
 
-template<typename typeFP> void test_solveCG(){
 //! \internal
 //! \brief Test the Conjugate-Gradient Solver.
 //! \ingroup AwesomeTesting
-    typeFP tol = (sizeof(typeFP) > 4) ? 5.E-8 : 5.E-4;
+template<typename typeFP> void test_solveCG(){
+
+    typeFP tol = (typeFP) ((sizeof(typeFP) > 4) ? 5.E-8 : 5.E-4);
     std::valarray<int> pntr = {0, 2, 5, 8, 11, 13};
     std::valarray<int> indx = {0, 1, 0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4};
     std::valarray<typeFP> vals = {2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0};

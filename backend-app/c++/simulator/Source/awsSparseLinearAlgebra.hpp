@@ -14,18 +14,17 @@ namespace AWSM{
 //! \copyright ???
 //! \ingroup AwesomeSLA
 //!
-//! Realizes the solver templates using the matrix operations
+//! Realizes the solver templates using the matrix operations.
 //!
 
+//! \brief Conjugate-Gradient solver with pre-computed ILU preconditioner.
+//! \ingroup AwesomeSLA
 template<typename typeFP, typename typeIdx = int>
 unsigned
 int solveCGILU(typeFP tolerance, unsigned int max_iterations,
                 const std::valarray<typeIdx> &pntr, const std::valarray<typeIdx> &indx, const std::valarray<typeFP> &vals,
                 const std::valarray<typeIdx> &diag, const std::valarray<typeFP> &ilu,
                 const std::valarray<typeFP> &b, std::valarray<typeFP> &x){
-//! \brief Conjugate-Gradient solver with pre-computed ILU preconditioner
-//! \ingroup AwesomeSLA
-
 //! Solves \f$ A x = b \f$ using the Conjugate-Gradient method and Incomplete LU preconditioner.
 //! - \b typeFP is a floating point type, e.g., \b float or \b double
 //! - \b typeIdx is the signed integer indexing type, e.g., \b int or \b long long
@@ -64,7 +63,7 @@ int solveCGILU(typeFP tolerance, unsigned int max_iterations,
                      ly -= la * lx;
                  }},
              [&](const std::valarray<typeFP> &lx, const std::valarray<typeFP> &ly, typeFP &la) -> void{  // vector dot-product
-                    la = std::inner_product(std::begin(lx), std::end(lx), std::begin(ly), 0.0);
+                    la = std::inner_product(std::begin(lx), std::end(lx), std::begin(ly), (typeFP) 0.0);
                  },
              [&](unsigned int iterations, const std::valarray<typeFP> &res) -> bool{  // check convergence
                     typeFP norm = 0.0;
@@ -73,14 +72,13 @@ int solveCGILU(typeFP tolerance, unsigned int max_iterations,
                  });
 }
 
+//! \brief Conjugate-Gradient solver with pre-computed ILU preconditioner.
+//! \ingroup AwesomeSLA
 template<typename typeFP, typename typeIdx = int>
 unsigned
 int solveCGILU(typeFP tolerance, unsigned int max_iterations,
                 const std::valarray<typeIdx> &pntr, const std::valarray<typeIdx> &indx, const std::valarray<typeFP> &vals,
                 const std::valarray<typeFP> &b, std::valarray<typeFP> &x){
-//! \brief Conjugate-Gradient solver with pre-computed ILU preconditioner
-//! \ingroup AwesomeSLA
-
 //! Solves \f$ A x = b \f$ using the Conjugate-Gradient method and Incomplete LU preconditioner.
 //! - computes the preconditioner and calls AWSM::solveCGILU()
 
@@ -90,6 +88,48 @@ int solveCGILU(typeFP tolerance, unsigned int max_iterations,
 
     return solveCGILU<typeFP, typeIdx>(tolerance, max_iterations, pntr, indx, vals, diag, ilu, b, x);
 }
+
+//! \brief A calss that encapsulates the data structures that define a sparse matrix in column compressed format.
+//! \ingroup AwesomeSLA
+
+//! A \b SparseMatrix described in column compressed format is defined by three \b valarray structures, \b pntr that
+//! gives the offsets of each row, \b indx that indexes the non-zero entries of each row, and \b vals that holds
+//! the non-zero values. In addition, the class includes the computed Incomplete LU factor and the offsets of the
+//! diagonal entries.
+template<typename typeFP, typename typeIdx = int>
+class SparseMatrix{
+public:
+    //! \brief Constructor, create a matrix from the given vectors, move the data into the internal data-structures
+    SparseMatrix(std::valarray<typeIdx> &cpntr, std::valarray<typeIdx> &cindx, std::valarray<typeFP> &cvals){
+        pntr = std::move(cpntr);
+        indx = std::move(cindx);
+        vals = std::move(cvals);
+    }
+    //! \brief Default destructor, release all memory
+    ~SparseMatrix(){}
+
+    //! \brief Computes \f$ r = \alpha A x + \beta r \f$, where \b A is this matrix, i.e., wrapper around \b spMatVec()
+    void multiply(typeFP alpha, const std::valarray<typeFP> &x, typeFP beta, std::valarray<typeFP> &r) const{
+        spMatVec<typeFP, typeIdx>(alpha, pntr, indx, vals, x, beta, r);
+    }
+
+    //! \brief Solve \f$ A x = b \f$ where \b A is this matrix and using the Conjugate-Gradient method with Incomplete LU factorization, i.e., \b solveCGILU()
+
+    //! The first call to this function will factorize the matrix and update the mutable internal variables, i.e.,
+    //! the first call should not be done simultaneously from different threads.
+    //! Follow on calls to solve will reuse the existing factor information and can be called in parallel.
+    //! See \b solveCGILU() for details on the algorithm used here.
+    unsigned int solveCG(typeFP tolerance, unsigned int max_iterations, const std::valarray<typeFP> &b, std::valarray<typeFP> &x) const{
+        if (ilu.size() == 0) spFactorizeILU<typeFP, typeIdx>(pntr, indx, vals, diag, ilu);
+        return solveCGILU<typeFP, typeIdx>(tolerance, max_iterations, pntr, indx, vals, diag, ilu, b, x);
+    }
+
+private:
+    std::valarray<typeIdx> pntr, indx;
+    mutable std::valarray<typeIdx> diag;
+    std::valarray<typeFP> vals;
+    mutable std::valarray<typeFP> ilu;
+};
 
 }
 
