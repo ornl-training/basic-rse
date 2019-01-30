@@ -13,10 +13,10 @@ Day 8: Testing and Gathering Metrics for the Simulator\
 Day 9: Java Build Systems and Unit Testing\
 Day 10: Application 2 - A Web-Based Front-end for the Simulator\
 Day 11: Testing and Gathering Metrics for the Front-end\
-Day 12: Visualization and Data Management Basics\
+Day 12: Visualization and Data Management Basics
 
 ## Dates and Venue
-This is a 10 week course running from ??? to ??? in the JICS auditorium.
+This is a 10 week course running each Wednesday from May 29th 2019 to August 7th 2019 at 3:00 to 4:30 in the JICS auditorium, except the week of the July 4th.
 
 ## Course Requirements
 There are two basic requirements for this course.
