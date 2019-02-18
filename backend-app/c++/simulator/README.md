@@ -16,6 +16,7 @@ Performing out-of-source CMake build:
   make
   make test          (optional: requires enabled testing)
   make AWESOME_docs  (optional: requires enabled Doxygen and graphviz)
+  make AWESOME_coverage (optional: requires gcovr and gnu compilers)
 ```
 
 Available AWESOME CMake options:
@@ -23,6 +24,7 @@ Available AWESOME CMake options:
   -D AWESOME_ENABLE_TESTING=<ON/OFF>  (build the tests, strongly recommended)
   -D AWESOME_ENABLE_DOXYGEN=<ON/OFF>  (build the documentation, requires Doxygen)
   -D AWESOME_ENABLE_PYTHON=<ON/OFF>   (configure the python plotter script to off-line testing)
+  -D AWESOME_ENABLE_GCOV=<ON/OFF>     (build target AWESOME_coverage to produce html coverage report)
 ```
 
 Example CMake command:
@@ -35,6 +37,7 @@ Example CMake command:
         -D AWESOME_ENABLE_DOXYGEN=ON \
         -D DOXYGEN_INTERNAL_DOCS=YES \
         -D AWESOME_ENABLE_PYTHON=ON \
+        -D AWESOME_ENABLE_COVERAGE=ON \
         <path-to-awesome-folder>
 ```
 * note: a shared library is probably required to interface with the rest of the project, certainly so for python.

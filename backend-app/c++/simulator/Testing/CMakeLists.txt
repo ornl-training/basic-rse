@@ -15,3 +15,16 @@ target_link_libraries(AWESOME_pde_tests AWESOME_libawesome)
 target_include_directories(AWESOME_pde_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_test(AwesomePDE pde_tests)
+
+if (AWESOME_ENABLE_GCOV)
+	if(CMAKE_COMPILER_IS_GNUCXX)
+	    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+	    include(CodeCoverage)
+	    APPEND_COVERAGE_COMPILER_FLAGS()
+    	SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(NAME ${PROJECT_NAME}_coverage 
+    	                                     EXECUTABLE ctest
+    	                                     DEPENDENCIES AWESOME_sla_tests 
+    	                                                  AWESOME_pde_tests)
+	endif()
+endif()
+
