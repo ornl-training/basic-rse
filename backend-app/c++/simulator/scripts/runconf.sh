@@ -1,0 +1,13 @@
+
+
+
+cmake \
+        -D CMAKE_BUILD_TYPE=Debug \
+        -D CMAKE_CXX_FLAGS="-O3" \
+        -D BUILD_SHARED_LIBS=ON \
+        -D AWESOME_ENABLE_TESTING=ON \
+        -D AWESOME_ENABLE_DOXYGEN=ON \
+        -D DOXYGEN_INTERNAL_DOCS=YES \
+        -D AWESOME_ENABLE_PYTHON=ON \
+        -D AWESOME_ENABLE_GCOV=ON \
+		..
