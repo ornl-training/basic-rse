@@ -15,7 +15,7 @@ Performing out-of-source CMake build:
   cmake <options> <path-to-awesome-folder>
   make
   make test          (optional: requires enabled testing)
-  make AWESOME_docs  (optional: requires enabled Doxygen)
+  make AWESOME_docs  (optional: requires enabled Doxygen and graphviz)
 ```
 
 Available AWESOME CMake options:
