@@ -25,6 +25,9 @@ if (AWESOME_ENABLE_GCOV)
     	                                     EXECUTABLE ctest
     	                                     DEPENDENCIES AWESOME_sla_tests 
     	                                                  AWESOME_pde_tests)
+	else()
+		message(FATAL_ERROR 
+		        "-DAWESOME_ENABLE_GCOV=ON requires GNU compilers, exiting")
 	endif()
 endif()
 
