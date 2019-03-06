@@ -37,7 +37,7 @@ Example CMake command:
         -D AWESOME_ENABLE_DOXYGEN=ON \
         -D DOXYGEN_INTERNAL_DOCS=YES \
         -D AWESOME_ENABLE_PYTHON=ON \
-        -D AWESOME_ENABLE_COVERAGE=ON \
+        -D AWESOME_ENABLE_GCOV=ON \
         <path-to-awesome-folder>
 ```
 * note: a shared library is probably required to interface with the rest of the project, certainly so for python.
